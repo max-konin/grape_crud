@@ -1,5 +1,9 @@
-require "grape_crud/version"
+require 'grape_crud/version'
 
-module GrapeCrud
-  # Your code goes here...
+require 'will_paginate'
+require 'will_paginate/array'
+
+require 'grape_crud/actions/index'
+
+module GrapeCRUD
 end

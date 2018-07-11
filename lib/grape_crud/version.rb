@@ -1,3 +1,3 @@
-module GrapeCrud
-  VERSION = "0.1.0"
+module GrapeCRUD
+  VERSION = '0.1.0'.freeze
 end
