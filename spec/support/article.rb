@@ -3,7 +3,7 @@ require 'active_model'
 class Article
   include ActiveModel::Model
 
-  attr_accessor :name, :text
+  attr_accessor :name, :text, :id
   cattr_accessor(:repo) { [] }
 
   validates_presence_of :name

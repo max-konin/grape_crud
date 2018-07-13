@@ -8,28 +8,33 @@ RSpec.describe GrapeCRUD do
       subject
     end
 
-    subject do
+    def build_api(authorize, policy_class)
       Class.new(Grape::API) do
-        extend GrapeCRUD
+        include GrapeCRUD
+
         format :json
 
-        resource :article do
+        resource :articles do
           helpers do
             def model
               Article
             end
+
+            def policy
+              policy_class
+            end
           end
 
           desc 'returns list of articles'
-          params :filter do
-            optional :name, type: String
+          params do
+            optional :filter, type: Hash do
+              optional :name, type: String
+            end
           end
-          add_index_action options
+          add_index_action authorize: authorize
         end
       end
     end
-
-    let(:options) { { authorize: authorize } }
 
     RSpec.shared_examples 'an index action' do
       let!(:article_a) { Article.create name: 'a' }
@@ -83,7 +88,7 @@ RSpec.describe GrapeCRUD do
       context 'with custom base_query' do
         subject do
           Class.new(Grape::API) do
-            extend GrapeCRUD
+            include GrapeCRUD
             format :json
 
             resource :article do
@@ -95,13 +100,19 @@ RSpec.describe GrapeCRUD do
                 def base_query
                   Article.where(name: 'a')
                 end
+
+                def policy
+                  policy
+                end
               end
 
               desc 'returns list of articles'
-              params :filter do
-                optional :name, type: String
+              params do
+                optional :filter, type: Hash do
+                  optional :name, type: String
+                end
               end
-              add_index_action options
+              add_index_action
             end
           end
         end
@@ -120,17 +131,20 @@ RSpec.describe GrapeCRUD do
     end
 
     context 'with authorization' do
-      let(:authorize) { true }
       context 'when user has permission' do
+        subject { build_api true, ArticlePublicPolicy }
+
         it_behaves_like 'an index action'
       end
-      context 'when user ha not permission' do
+      context 'when user has not permission' do
+        subject { build_api true, ArticleProtectedPolicy }
+
         before { get '/articles' }
         it { expect(last_response.status).to eq 401 }
       end
     end
     context 'without authorization' do
-      let(:authorize) { false }
+      subject { build_api false, ArticleProtectedPolicy }
 
       it_behaves_like 'an index action'
     end

@@ -36,5 +36,7 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'grape', '~> 1.0'
 
+  spec.add_dependency 'grape-entity', '~> 0.7'
   spec.add_dependency 'process_chain', '~> 0.1'
+  spec.add_dependency 'pundit', '~> 1.1'
 end

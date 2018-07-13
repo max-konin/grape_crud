@@ -3,7 +3,9 @@ PATH
   specs:
     grape_crud (0.1.0)
       grape (~> 1.0)
+      grape-entity (~> 0.7)
       process_chain (~> 0.1)
+      pundit (~> 1.1)
 
 GEM
   remote: https://rubygems.org/
@@ -21,6 +23,7 @@ GEM
       ice_nine (~> 0.11.0)
       thread_safe (~> 0.3, >= 0.3.1)
     builder (3.2.3)
+    byebug (10.0.1)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
     concurrent-ruby (1.0.5)
@@ -64,6 +67,8 @@ GEM
     powerpack (0.1.2)
     process_chain (0.1.0)
       hashie (~> 3.5)
+    pundit (1.1.0)
+      activesupport (>= 3.0.0)
     rack (2.0.5)
     rack-accept (0.4.5)
       rack (>= 0.4)
@@ -120,6 +125,7 @@ PLATFORMS
 DEPENDENCIES
   activemodel
   bundler
+  byebug
   coveralls (~> 0.8.17)
   grape-entity (~> 0.6)
   grape_crud!

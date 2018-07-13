@@ -5,6 +5,7 @@ git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 gemspec
 
 group :development, :test do
+  gem 'byebug'
   gem 'bundler'
   gem 'rake'
   gem 'rubocop', '0.51.0'
