@@ -12,6 +12,11 @@ module GrapeCRUD
     class IndexProcess
       include ProcessChain
 
+      def initialize(options = {})
+        super options
+        @results = options[:input]
+      end
+
       # Associate chain with searcher.
       # @parms searcher [Object] searcher object with "results" method
       # @raise [ArgumentError] when searcher has not "results" method
@@ -31,7 +36,7 @@ module GrapeCRUD
         if_success do
           searcher = results.searcher
           model_class = results.model_class
-          return_success records: searcher.results(model_class)
+          return_success records: searcher.results(model_class.all)
         end
       end
 

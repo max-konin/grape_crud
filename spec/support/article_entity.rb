@@ -1,3 +1,4 @@
 class ArticleEntity < Grape::Entity
-  expose :name, :tex
+  root :articles, :article
+  expose :id, :name
 end

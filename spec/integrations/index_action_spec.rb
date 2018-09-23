@@ -8,7 +8,7 @@ RSpec.describe GrapeCRUD do
       subject
     end
 
-    def build_api(authorize, policy_class)
+    def build_api(authorize)
       Class.new(Grape::API) do
         include GrapeCRUD
 
@@ -20,8 +20,8 @@ RSpec.describe GrapeCRUD do
               Article
             end
 
-            def policy
-              policy_class
+            def current_user
+              nil
             end
           end
 
@@ -132,19 +132,23 @@ RSpec.describe GrapeCRUD do
 
     context 'with authorization' do
       context 'when user has permission' do
-        subject { build_api true, ArticlePublicPolicy }
+        subject { build_api true }
 
         it_behaves_like 'an index action'
       end
       context 'when user has not permission' do
-        subject { build_api true, ArticleProtectedPolicy }
+        subject { build_api true }
 
-        before { get '/articles' }
+        before do
+          allow_any_instance_of(ArticlePolicy).to 
+            receive(:index?).and_return(false)
+          get '/articles'
+        end
         it { expect(last_response.status).to eq 401 }
       end
     end
     context 'without authorization' do
-      subject { build_api false, ArticleProtectedPolicy }
+      subject { build_api false }
 
       it_behaves_like 'an index action'
     end

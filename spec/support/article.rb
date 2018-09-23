@@ -3,15 +3,21 @@ require 'active_model'
 class Article
   include ActiveModel::Model
 
-  attr_accessor :name, :text, :id
+  attr_accessor :name, :text, :id, :private
   cattr_accessor(:repo) { [] }
 
   validates_presence_of :name
 
   class << self
     def find(id)
-      repo.select { |item| item.id == id }
-          .first
+      record = repo.select { |item| item.id.to_s == id.to_s }
+                   .first
+      raise '404' if record.nil?
+      record
+    end
+
+    def all
+      repo
     end
 
     def where(options)

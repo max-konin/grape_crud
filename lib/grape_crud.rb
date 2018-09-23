@@ -30,10 +30,6 @@ module GrapeCRUD
                 'permitted_params helper is not implemented'
         end
 
-        def policy
-          nil
-        end
-
         def searcher
           DefaultSearcher.new(filters: params[:filter])
         end
