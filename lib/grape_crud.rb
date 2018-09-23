@@ -25,9 +25,12 @@ module GrapeCRUD
           raise NotImplementedError, 'model helper is not implemented'
         end
 
+        def params_key
+          model.to_s.underscore
+        end
+
         def permitted_params
-          raise NotImplementedError,
-                'permitted_params helper is not implemented'
+          declared(params, include_missing: false)[params_key].to_hash
         end
 
         def searcher

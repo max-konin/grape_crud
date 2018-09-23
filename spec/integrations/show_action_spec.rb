@@ -39,7 +39,7 @@ RSpec.describe GrapeCRUD do
     RSpec.shared_examples 'a show action' do
       before { get "/articles/#{article.id}" }
       it { expect(last_response.status).to eq 200 }
-      it 'returns first serialized artivle' do
+      it 'returns serialized article' do
         expect(response_body).to eq(
           'article' => { 'id' => article.id, 'name' => 'a' }
         )

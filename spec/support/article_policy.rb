@@ -11,4 +11,8 @@ class ArticlePolicy
   def show?
     !@record.private
   end
+
+  def create?
+    @user.can_create_article
+  end
 end

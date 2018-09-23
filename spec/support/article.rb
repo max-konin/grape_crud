@@ -31,7 +31,7 @@ class Article
     end
 
     def create(attrs)
-      new(attrs.merge(id: (Article.repo.size + 1))).save
+      new(attrs.merge(id: next_id)).save
     end
 
     def count
@@ -41,6 +41,7 @@ class Article
 
   def save
     if valid?
+      self.id = next_id if id.blank?
       repo << self
       self
     else
@@ -50,5 +51,11 @@ class Article
 
   def destroy
     Article.repo.delete self
+  end
+
+  private
+
+  def next_id
+    Article.repo.size + 1
   end
 end

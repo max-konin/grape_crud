@@ -1,7 +1,7 @@
 module GrapeCRUD
   # :nodoc:
   module ClassMethods
-    # Adds '/' andpoint to your resource
+    # Adds GET '/' andpoint to your resource
     # @param [Hash] options the options to paginate
     # @option authorize [true,false] pass true if you need authorization.
     #  (Pundit)
@@ -28,7 +28,7 @@ module GrapeCRUD
       end
     end
 
-    # Adds '/:id' endpoint to your resource
+    # Adds GET '/:id' endpoint to your resource
     # @param [Hash] options the options to paginate
     # @option authorize [true,false] pass true if you need authorization.
     #  (Pundit)
@@ -45,6 +45,35 @@ module GrapeCRUD
         item = model.find params[:id]
         authorize item, :show? if options[:authorize]
         present item, with: entity_class
+      end
+    end
+
+    # Add POST '/' to your resource
+    # @param [Hash] options the options to paginate
+    # @option authorize [true,false] pass true if you need authorization.
+    #  (Pundit)
+    # @example
+    #  class ArticlesAPI < Grape::API
+    #    include GrapeCRUD
+    #    resource :articles do
+    #      desc 'Creates new article'
+    #      params do
+    #        requires :article, type: Hash do
+    #          requires :name, type: String
+    #        end
+    #      end
+    #      add_create_action
+    #    end
+    #  end
+    def add_create_action(options = {})
+      post '/' do
+        item = model.new permitted_params
+        authorize item, :create? if options[:authorize]
+        if item.save
+          present item, with: entity_class
+        else
+          error!({ errors: item.errors.messages }, 422)
+        end
       end
     end
   end
