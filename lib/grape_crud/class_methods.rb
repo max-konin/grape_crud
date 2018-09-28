@@ -2,7 +2,7 @@ module GrapeCRUD
   # :nodoc:
   module ClassMethods
     # Adds GET '/' andpoint to your resource
-    # @param [Hash] options the options to paginate
+    # @param [Hash] options
     # @option authorize [true,false] pass true if you need authorization.
     #  (Pundit)
     # @example
@@ -29,7 +29,7 @@ module GrapeCRUD
     end
 
     # Adds GET '/:id' endpoint to your resource
-    # @param [Hash] options the options to paginate
+    # @param [Hash] options
     # @option authorize [true,false] pass true if you need authorization.
     #  (Pundit)
     # @example
@@ -49,7 +49,7 @@ module GrapeCRUD
     end
 
     # Add POST '/' to your resource
-    # @param [Hash] options the options to paginate
+    # @param [Hash] options
     # @option authorize [true,false] pass true if you need authorization.
     #  (Pundit)
     # @example
@@ -74,6 +74,27 @@ module GrapeCRUD
         else
           error!({ errors: item.errors.messages }, 422)
         end
+      end
+    end
+
+    # Add DELETE '/:id' to your resource
+    # @param [Hash] options
+    # @option authorize [true,false] pass true if you need authorization.
+    #  (Pundit)
+    # @example
+    #  class ArticlesAPI < Grape::API
+    #    include GrapeCRUD
+    #    resource :articles do
+    #      desc 'Deletes an article'
+    #      add_destroy_action
+    #    end
+    #  end
+    def add_destroy_action(options = {})
+      delete '/:id' do
+        item = model.find params[:id]
+        authorize item, :destroy? if options[:authorize]
+        item.destroy
+        body false
       end
     end
   end

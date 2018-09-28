@@ -1,25 +1,20 @@
 require 'spec_helper'
 
 RSpec.describe GrapeCRUD do
-  describe '#add_create_action' do
+  describe '#add_destroy_action' do
     let(:response_body) { JSON.parse(last_response.body) }
+    let!(:article) { Article.create name: 'my awesome article' }
 
     def app
       subject
     end
 
-    RSpec.shared_examples 'a create action' do
-      before { post '/articles', params }
+    RSpec.shared_examples 'a destroy action' do
+      before { delete "/articles#{article.id}" }
       context 'when params is valid' do
-        let(:params) { { article: { name: 'name' } } }
-        it { expect(last_response.status).to eq 201 }
-        it 'returns serialized new article' do
-          expect(response_body).to eq(
-            'article' => { 'id' => 1, 'name' => 'name' }
-          )
-        end
-        it 'creates new articles into the store' do
-          expect(Article.count).to eq 1
+        it { expect(last_response.status).to eq 204 }
+        it 'removes article from the store' do
+          expect(Article.count).to eq 0
         end
       end
       context 'when params is invalid' do
@@ -29,7 +24,7 @@ RSpec.describe GrapeCRUD do
     end
 
     context 'with auth' do
-      context 'when user can create an article' do
+      context 'when user can destroy articles' do
         subject do
           Class.new(Grape::API) do
             include GrapeCRUD
@@ -37,10 +32,7 @@ RSpec.describe GrapeCRUD do
             format :json
 
             rescue_from Pundit::NotAuthorizedError do |_e|
-              rack_response(
-                '{ "status": 401, "message": "Unauthorized." }',
-                401
-              )
+              rack_response('{ "status": 401, "message": "Unauthorized." }', 401)
             end
 
             resource :articles do
@@ -54,19 +46,14 @@ RSpec.describe GrapeCRUD do
                 end
               end
 
-              desc 'creats new article'
-              params do
-                requires :article, type: Hash do
-                  requires :name, type: String
-                end
-              end
-              add_create_action authorize: true
+              desc 'destroy an article'
+              add_destroy_action authorize: false
             end
           end
         end
-        it_behaves_like 'a create action'
+        it_behaves_like 'a destroy action'
       end
-      context 'when user can not create an article' do
+      context 'when user can not destroy articles' do
         subject do
           Class.new(Grape::API) do
             include GrapeCRUD
@@ -91,13 +78,8 @@ RSpec.describe GrapeCRUD do
                 end
               end
 
-              desc 'creats new article'
-              params do
-                requires :article, type: Hash do
-                  requires :name, type: String
-                end
-              end
-              add_create_action authorize: true
+              desc 'destroy an article'
+              add_destroy_action authorize: true
             end
           end
         end
@@ -128,17 +110,12 @@ RSpec.describe GrapeCRUD do
               end
             end
 
-            desc 'creats new article'
-            params do
-              requires :article, type: Hash do
-                requires :name, type: String
-              end
-            end
-            add_create_action authorize: false
+            desc 'destroy an article'
+            add_destroy_action authorize: false
           end
         end
       end
-      it_behaves_like 'a create action'
+      it_behaves_like 'a destroy action'
     end
   end
 end

@@ -13,6 +13,14 @@ class ArticlePolicy
   end
 
   def create?
-    @user.can_create_article
+    @user.can_manage_articles
+  end
+
+  def destroy?
+    @user.can_manage_articles
+  end
+
+  def update?
+    @user.can_manage_articles
   end
 end
